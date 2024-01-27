@@ -51,17 +51,12 @@ game_scene=scene:extend({
 
 		-- detect city touched by humor
 
-		-- Loop over placed humors, 
-		-- Check circle diameter and orign
-		-- If coordinates of certain city in circle, city is hit
-		-- Feed-forward event to city
-		-- humor:each
-		-- city:each("detect")
-		-- city:each("detect",function(obj)
-		-- 	sfx(0)
-		-- 	global.score+=1
-		-- end
-		-- )
+	
+		city:each("detect",function(obj)
+			sfx(0)
+			global.score+=1
+		end
+		)
 		
 		-- check win state
 		if #city.pool==0 then

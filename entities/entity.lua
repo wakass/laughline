@@ -1,7 +1,9 @@
+local lastid = 0
 -- entities
 entity=class:extend({
 	-- class
 	pool={},
+	id,
 	
 	extend=function(_ENV,tbl)
 		tbl=class.extend(_ENV,tbl)
@@ -22,6 +24,9 @@ entity=class:extend({
 	h=8,
 
 	init=function(_ENV)
+		lastid = lastid + 1
+		id = lastid
+
 		add(entity.pool,_ENV)
 		if pool != entity.pool then
 			add(pool,_ENV)

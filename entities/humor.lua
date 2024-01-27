@@ -4,6 +4,7 @@ humor=entity:extend({
 	max_size=50,
 	type=0,
 	pool={},
+	orig_id=0, --who originated the humor
 	
 	update=function(_ENV)
 		if (size==0) then
