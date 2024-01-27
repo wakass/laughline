@@ -5,6 +5,11 @@ humor=entity:extend({
 	type=0,
 	pool={},
 	orig_id=0, --who originated the humor
+
+	text_px = 0,
+	text_py = 0,
+	text_id = 0,
+	text_fade = 30,
 	
 	update=function(_ENV)
 		if (size==0) then
@@ -13,13 +18,38 @@ humor=entity:extend({
 			set_speed(0,10)
 			sfx(0)
 		end
+		
 		size+=1
+		
 		if size > max_size then
 			destroy(_ENV)
+		end
+		
+		text_fade = text_fade - 1
+		
+		if (text_fade < 1) then			
+			-- circle diameter is size * 2 + 1
+			text_px   = x + flr(rnd(size * 2 + 1)) - size - 1
+			text_py   = y + flr(rnd(size * 2 + 1)) - size - 1		
+			text_id   = ceil(rnd(4))	
+			text_fade = 30
 		end
 	end,
 	
 	draw=function(_ENV)
+		circ(x+4,y+4,size,0) -- 'shadow'
 		circ(x+3,y+3,size,type)
+		
+		if (text_px < 1) or (text_py < 1) then 
+			return 
+		end
+		
+		    if (text_id == 1) then prints("haha", text_px, text_py, type)
+		elseif (text_id == 2) then prints("hihi", text_px, text_py, type)
+		elseif (text_id == 3) then prints("lol",  text_px, text_py, type)
+		elseif (text_id == 4) then prints("kek",  text_px, text_py, type)
+		else                       
+			printh("humor text_id: " .. text_id)
+		end	
 	end,
 })
