@@ -19,8 +19,8 @@ title_scene=scene:extend({
 		
 		if rnd(100) < 50 then
 			humor({
-				x=10,
-				y=30,
+				x=21,
+				y=16,
 				type=rnd(4)+8,
 				max_size=rnd(150),
 			})
@@ -32,14 +32,19 @@ title_scene=scene:extend({
 		entity:each("draw")
 		
 		-- title
-		print_title("laughline 7",32,7)
+		print_title("laughline7",20,7)
+		
+		-- logo
+		draw_ll7(90,37,2,5)
+		draw_ll7(90,35,2,7)
+		
 		
 		-- instructions
-		printc("create laughter in the world",60,6)
-		printc("before time runs out!",68,6)
+		printc("create laughter in the world",85,7)
+		printc("before time runs out!",95,7)
 		
 		-- prompt
-		printc("❎ start game",96,7)
+		printc("❎ start game",110,7)
 	end,
 })
 

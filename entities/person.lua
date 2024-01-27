@@ -5,42 +5,63 @@ person=entity:extend({
 	w=7,
 	h=5,
 	humor_type=8,
-
+	energy=50,
+	energy_move_costs=.5,
+	energy_humor_costs=10,
+	
 	dx=0,
 	dy=0,
-
+	
+	update_energy=function(_ENV)
+		-- give a little bit of energy
+		energy+=.1
+		-- take energy to move
+		if dx!=0 or dy !=0 then
+			energy-=energy_move_costs
+		end
+		-- limit energy to min and max
+		energy=mid(0,energy,100)
+	end,
+		
 	update=function(_ENV)
+	
+		update_energy(_ENV)
+		
 		dx,dy=0,0
 
 		if (btn(⬆️)) dy-=1
 		if (btn(⬇️)) dy+=1
 		if (btn(⬅️)) dx-=1
 		if (btn(➡️)) dx+=1
-		
 
 		if dx!=0 or dy !=0 then
-			-- normalize movement
-			local a=atan2(dx,dy)
-			x+=cos(a)
-			y+=sin(a)
+			if energy > energy_move_costs then
+				-- normalize movement
+				local a=atan2(dx,dy)
+				x+=cos(a)
+				y+=sin(a)
 
-			-- spawn dust each 3/10 sec
-			if (t()*10)\1%3==0 then
-				dust({
-					x=x+rnd(3),
-					y=y+4,
-					frames=18+rnd(4),
-				})
+				-- spawn dust each 3/10 sec
+				if (t()*10)\1%3==0 then
+					dust({
+						x=x+rnd(3),
+						y=y+4,
+						frames=18+rnd(4),
+					})
+				end
 			end
 		end
 		
 		-- place humor
 		if (btnp(4)) then 
-			humor({
-				x=x,
-				y=y,
-				type=humor_type,
-			})
+			if energy > energy_humor_costs then
+				humor({
+					x=x,
+					y=y,
+					type=humor_type,
+				})
+				energy-=energy_humor_costs
+			end
 		end
 		
 		-- select humor_type
@@ -58,8 +79,18 @@ person=entity:extend({
 	end,
 
 	draw=function(_ENV)
-		prints("😐",x,y,humor_type)
+		prints("😐",x,y,humor_type)	
 		
+		local energy_x=6
+		local energy_y=116
+		local energy_w=115
+		local energy_h=5
+		rectfill(energy_x,energy_y,energy_x+(energy_w*(energy/100)),energy_y+energy_h,5)
+		for i=1,n_humor_types do
+			rectfill(energy_x+(i*25),energy_y,energy_x+(i*25),energy_y+energy_h,8+i)	
+		end
+		rect(energy_x,energy_y,energy_x+energy_w,energy_y+energy_h,7)
+
 	end,
 })
 

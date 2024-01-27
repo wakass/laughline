@@ -51,3 +51,21 @@ function draw_sickhouse(x,y)
 	sspr(88,0,40,40,x,y)
 	palt()
 end
+
+function draw_rectfill(x,y,w,h,color)
+	rectfill(x,y,x+w,y+h,color)	
+end
+
+function draw_ll7(x,y,size,color)
+	circfill(x,y,size,color)
+	circfill(x+(size*5),y,size,color)
+	draw_rectfill(x-(size),y+(size*4),size*7,size,color)
+	draw_rectfill(x-(size*2),y+(size*3),size,size,color)
+	draw_rectfill(x+(size*6),y+(size*3),size,size,color)
+	
+	draw_rectfill(x-(size*2),y+(size*7),size*9,size,color)
+	
+	draw_rectfill(x-(size*3),y+(size*10),size*11,size,color)
+
+end
+
