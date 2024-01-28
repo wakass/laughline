@@ -6,48 +6,75 @@ city=entity:extend({
 	w=5,
 	h=5,
 	pool={},
-	humor_type=0,
+	humor_type=1,
 	humor_level=0,
-	humor_treshold=100,
-	humor_sensitivity=10,
+	humor_treshold=1,
+	humor_sensitivity={},
+	humor_level_per_type={0,0,0,0},
 	humor_decay=0,
 	seen_humors = {}, --humors seen
+	
+	init=function(_ENV)
+		entity.init(_ENV)
+		humor_level_per_type={0,0,0,0}
+	end,
 
 	update=function(_ENV)
 		-- decay humor level over time
 		humor_level-=humor_decay
 		
 		-- increase humor level of touched by humor
-		if true then
-			humor_level+=humor_sensitivity
-		end
+		-- if true then
+		-- 	humor_level+=humor_sensitivity
+		-- end
 		
-		-- trigger humor
-		-- if humor_level >= humor_treshold then
-		-- 	humor({
-		-- 		x=x,
-		-- 		y=y,
-		-- 		type=humor_type+8,
-		-- 		max_size=rnd(20)+30,
-		-- 	})
-		-- 	humor_level = 0
-		-- end	
+		-- Find total humor level and possible trigger
+		-- Make a squares weight for humor level
+		local level = 0 
+		for i,l in ipairs(humor_level_per_type) do
+			level += l^2
+		end
+		humor_level = sqrt(level)
+		
+		-- More likely to emit humor it likes
+		likelihoods = {}
+		for i,n in ipairs(humor_sensitivity) do
+			l = n*rnd()
+			-- printh(l)
+			add(likelihoods, l)
+		end
+
+		k,v = max_table(likelihoods, function(a,b) return a < b end)
+
+		emit_humor_type = k
+		-- printh("city id :" .. id .. "h: ".. k .. "level:" .. humor_level_per_type[3])
+		
+		if humor_level >= humor_treshold then
+			humor({
+				x=x,
+				y=y,
+				type=emit_humor_type,
+				max_size=rnd(20)+30,
+			})
+			humor_level = 0
+		end	
 
 		prune_seen_humors(_ENV) -- Remove any seen humours that have xpired
 	end,
 	
-	--Detect if within other humor 
-	--not own humor!
-	--If still within same bubble humor as before should also not trigger
+	process_incoming_humor=function(_ENV, h, distance) 
+		-- the humor that hit is weighted by sensitivity and distance/2
+		printh("Process humor type: ".. h.type .. "city id: " .. id)
+		assert(h.type >0)
+		if (flr(h.type) > n_humor_types) then 
+			printh("BUG!: ".. h.type)
+			return --bug fix
+		end
+		humor_level_per_type[h.type] += humor_sensitivity[h.type]/distance^2
+		
+	end,
 
-		-- Loop over placed humors, 
-		-- Check circle diameter and orign
-		-- If coordinates of certain city in circle, city is hit
-		-- Feed-forward event to city
-		-- humor:each
-		-- city:each("detect")
-
-	detect=function(_ENV, success_fun)
+	detect=function(_ENV)
 		for h in all(humor.pool) do
 			-- Calculate distance between city and initiated humor,
 			-- distance should 
@@ -57,19 +84,10 @@ city=entity:extend({
 			d = sqrt((x1.x-x0.x)^2 + (x1.y-x0.y)^2)
 			if (d < h.size and h.orig_id != id) then
 				if (process_seen(_ENV, h) == -1) then
-					printh("Didnt see it yet" .. h.id)
-
-					-- trigger humor
-					humor({
-						x=x,
-						y=y,
-						type=humor_type+8,
-						max_size=rnd(20)+30,
-						orig_id=id
-					})
+					-- Humor not seen yet, processing..
+					process_incoming_humor(_ENV, h, d)
 				else
 					-- Ignore already seen humor
-					-- printh("Already saw humor".. h.id)
 				end
 			end
 		end
@@ -105,9 +123,35 @@ city=entity:extend({
 		end
 	end,
 
+	
+
 	draw=function(_ENV)
-		rectfill(x+2,y+2,x+4,y+3,humor_type+8)		
-		print("⌂",x,y,1)
+		rectfill(x+2, y+2, x+4, y+3, humor_type+8)		
+		print("⌂", x, y, 1)
+
+		print("h:" .. humor_level,x-6,y-6,1)
+		--- Draw humor level
+		fullscale = 8 -- fullscale pixels for humor level
+		x_offset = 8
+		y_offset = 8
+
+		for i,v in ipairs(humor_level_per_type) do
+			rectfill(x + x_offset + i,
+					y + y_offset,
+					x + x_offset + 1 + i,
+					y + y_offset- v*8, 
+					i+8)
+		end
+
+		for i,v in ipairs(humor_sensitivity) do
+			rectfill(x - x_offset + i,
+					y + y_offset,
+					x - x_offset + 1 + i,
+					y + y_offset - v*8, 
+					i+8)
+		end
+
+		-- print(humor_level_per_type,0,0)
 		--print(humor_level,x,y,7)
 	end
 })

@@ -1,3 +1,8 @@
+local cities_list= {  
+	{x=30,y=30,sens={0,0,1,1}},
+	{x=90,y=90,sens={1,1,0,0}}   
+}
+
 game_scene=scene:extend({
 	--[[
 	x type of humor each a color
@@ -15,6 +20,8 @@ game_scene=scene:extend({
 	you gain energy slowly
 	you can increase the lifetime of the circle	
 	]]--
+
+
 	
 	init=function(_ENV)
 		music(-1, 1000) --fade out any music playing
@@ -27,36 +34,24 @@ game_scene=scene:extend({
 		player=person()
 
 		-- spawn cities
-		while #city.pool < n_cities do
+		for index, value in next, cities_list do
+			c = value
 			local obj=city({
-				x=8+rnd(107),
-				y=16+rnd(99),
+				x=c.x,
+				y=c.y,
 				humor_type= rnd(n_humor_types),
-				humor_level=rnd(10),
 				humor_decay=rnd(10)/10,
-				humor_sensitivity=rnd(5),
-				
-				
+				humor_sensitivity=c.sens,
 			})
-			
-			-- destroy if colliding
-			--obj:detect(player,function()
-			--	obj:destroy()
-			--end)
 		end
-	end,
 
+	end,
+	
 	update=function(_ENV)
 		entity:each("update")
 
 		-- detect city touched by humor
-
-	
-		city:each("detect",function(obj)
-			sfx(0)
-			global.score+=1
-		end
-		)
+		city:each("detect")
 		
 		-- check win state
 		if #city.pool==0 then
@@ -77,7 +72,7 @@ game_scene=scene:extend({
 	end,
 
 	draw=function(_ENV)
-		add(entity.pool,del(entity.pool,player,map))
+		-- add(entity.pool,del(entity.pool,player,map))
 		entity:each("draw")	
 	end,
 })
