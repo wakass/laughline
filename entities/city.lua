@@ -1,5 +1,5 @@
 --Frame sensitivity for humors
-n_forget_frames = 30
+n_forget_frames = 300
 
 -- city
 city=entity:extend({
