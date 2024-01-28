@@ -13,10 +13,6 @@ title_scene=scene:extend({
 	update=function(_ENV)
 		entity:each("update")
 	
-		if btnp(❎) then
-			scene:load(game_scene)
-		end
-		
 		if rnd(100) < 50 then
 			humor({
 				x=21,
@@ -24,6 +20,11 @@ title_scene=scene:extend({
 				type=rnd(4)+8,
 				max_size=rnd(150),
 			})
+		end
+
+		-- Do this last to prevent humor spawning after cleanup
+		if btnp(❎) then
+			scene:load(game_scene)
 		end
 	end,
 
