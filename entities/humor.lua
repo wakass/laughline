@@ -5,18 +5,20 @@ humor=entity:extend({
 	type=0,
 	pool={},
 	orig_id=0, --who originated the humor
-
+	muted=false,
 	text_px = 0,
 	text_py = 0,
 	text_id = 0,
 	text_fade = 30,
 	
 	update=function(_ENV)
-		if (size==0) then
-			note=make_note(rnd(63),type,7,0)	-- pitch,instrument,vol,effect
-			set_note(0,1,note)
-			set_speed(0,10)
-			sfx(0)
+		if not muted then
+			if (size==0) then
+				note=make_note(rnd(63),type,7,0)	-- pitch,instrument,vol,effect
+				set_note(0,1,note)
+				set_speed(0,10)
+				sfx(0)
+			end
 		end
 		
 		size+=1
@@ -37,17 +39,20 @@ humor=entity:extend({
 	end,
 	
 	draw=function(_ENV)
+		color = type+8
 		circ(x+4,y+4,size,0) -- 'shadow'
-		circ(x+3,y+3,size,type)
+		circ(x+3,y+3,size,color)
+		
+
 		
 		if (text_px < 1) or (text_py < 1) then 
 			return 
 		end
 		
-		    if (text_id == 1) then prints("haha", text_px, text_py, type)
-		elseif (text_id == 2) then prints("hihi", text_px, text_py, type)
-		elseif (text_id == 3) then prints("lol",  text_px, text_py, type)
-		elseif (text_id == 4) then prints("kek",  text_px, text_py, type)
+		    if (text_id == 1) then prints("haha", text_px, text_py, color)
+		elseif (text_id == 2) then prints("hihi", text_px, text_py, color)
+		elseif (text_id == 3) then prints("lol",  text_px, text_py, color)
+		elseif (text_id == 4) then prints("kek",  text_px, text_py, color)
 		else                       
 			printh("humor text_id: " .. text_id)
 		end	
