@@ -6,9 +6,9 @@ person=entity:extend({
 	h=5,
 	humor_type=1,
 	energy=50,
-	energy_move_costs=.5,
-	energy_humor_costs=10,
-	
+	energy_move_costs=.1,
+	energy_humor_costs=5,
+	sprite_counter=0,
 	dx=0,
 	dy=0,
 	
@@ -41,14 +41,18 @@ person=entity:extend({
 				x+=cos(a)
 				y+=sin(a)
 
-				-- spawn dust each 3/10 sec
-				if (t()*10)\1%3==0 then
-					dust({
-						x=x+rnd(3),
-						y=y+4,
-						frames=18+rnd(4),
-					})
+				sprite_counter+=1
+				if sprite_counter>2 then
+					sprite_counter=0
 				end
+				-- spawn dust each 3/10 sec
+				--if (t()*10)\1%3==0 then
+				--	dust({
+				--		x=x+rnd(3),
+				--		y=y+4,
+				--		frames=18+rnd(4),
+				--	})
+				--end
 			end
 		end
 		
@@ -67,8 +71,8 @@ person=entity:extend({
 		-- select humor_type
 		if (btnp(5)) then 
 			humor_type+=1
-			if (humor_type >= n_humor_types) then
-				humor_type = n_humor_types
+			if (humor_type > n_humor_types) then
+				humor_type = 1
 			end
 		end
 		
@@ -79,13 +83,18 @@ person=entity:extend({
 	end,
 
 	draw=function(_ENV)
-		prints("😐",x,y,humor_type)	
+		--prints("😐",x,y,humor_type)
+
+		circfill(x+3,y+3,5,humor_type+8)
+		spr(1+((humor_type-1)*16)+sprite_counter,x-1,y-1)
+		circ(x+3,y+3,5,0)
 		
-		local energy_x=6
-		local energy_y=116
-		local energy_w=115
+		local energy_x=2
+		local energy_y=120
+		local energy_w=123
 		local energy_h=5
-		rectfill(energy_x,energy_y,energy_x+(energy_w*(energy/100)),energy_y+energy_h,5)
+		rectfill(energy_x,energy_y,energy_x+energy_w,energy_y+energy_h,5)
+		rectfill(energy_x,energy_y,energy_x+(energy_w*(energy/100)),energy_y+energy_h,6)
 		for i=1,n_humor_types do
 			rectfill(energy_x+(i*25),energy_y,energy_x+(i*25),energy_y+energy_h,8+i)	
 		end
