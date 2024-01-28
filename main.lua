@@ -3,7 +3,7 @@ GGJ game main
 ]]--
 
 -- config
-time_limit=100
+time_limit=30
 n_humor_types=4
 n_cities=4
 
