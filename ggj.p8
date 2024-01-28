@@ -6,6 +6,7 @@ __lua__
 #include tools/log.lua
 #include tools/print.lua
 #include tools/sound.lua
+#include tools/util.lua
 
 
 #include main.lua
