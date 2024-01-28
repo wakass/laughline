@@ -4,7 +4,7 @@ person=entity:extend({
 	y=60,
 	w=7,
 	h=5,
-	humor_type=8,
+	humor_type=1,
 	energy=50,
 	energy_move_costs=.5,
 	energy_humor_costs=10,
@@ -67,8 +67,8 @@ person=entity:extend({
 		-- select humor_type
 		if (btnp(5)) then 
 			humor_type+=1
-			if (humor_type>=8+n_humor_types) then
-				humor_type = 8
+			if (humor_type >= n_humor_types) then
+				humor_type = n_humor_types
 			end
 		end
 		
