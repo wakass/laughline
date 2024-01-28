@@ -44,9 +44,16 @@ city=entity:extend({
 			add(likelihoods, l)
 		end
 
-		k,v = max_table(likelihoods, function(a,b) return a < b end)
+		local max_index = 0
+		local max_value = 0
+		for idx,val in ipairs(likelihoods) do
+			if (val > max_value) then
+				max_value = val
+				max_index = idx
+			end
+		end
 
-		emit_humor_type = k
+		emit_humor_type = idx
 		-- printh("city id :" .. id .. "h: ".. k .. "level:" .. humor_level_per_type[3])
 		
 		if humor_level >= humor_treshold then
