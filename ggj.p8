@@ -1,6 +1,8 @@
 pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
+-- laughline 7
+-- ★ikchouse production
 #include tools/class.lua
 #include tools/scenes.lua
 #include tools/log.lua
