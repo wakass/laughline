@@ -1,5 +1,5 @@
 --Frame sensitivity for humors
-n_forget_frames = 30
+n_forget_frames = 300
 
 -- city
 city=entity:extend({
@@ -44,9 +44,16 @@ city=entity:extend({
 			add(likelihoods, l)
 		end
 
-		k,v = max_table(likelihoods, function(a,b) return a < b end)
+		local max_index = 0
+		local max_value = 0
+		for idx,val in ipairs(likelihoods) do
+			if (val > max_value) then
+				max_value = val
+				max_index = idx
+			end
+		end
 
-		emit_humor_type = k
+		emit_humor_type = idx
 		-- printh("city id :" .. id .. "h: ".. k .. "level:" .. humor_level_per_type[3])
 		
 		if humor_level >= humor_treshold then
@@ -130,26 +137,56 @@ city=entity:extend({
 		print("⌂", x, y, 1)
 
 		print("h:" .. humor_level,x-6,y-6,1)
-		--- Draw humor level
+		
+		
+		--- Draw humor level viz
 		fullscale = 8 -- fullscale pixels for humor level
 		x_offset = 8
 		y_offset = 8
+		height_max = 8
+		width_bar = 1
+		width_max = n_humor_types*width_bar
+		width_border = 1
+
+		-- offset right, humor level per type
+		-- draw black bg 
+		rectfill(x + x_offset - width_border,
+				 y + y_offset + width_border,
+				x + x_offset + width_max  + width_border*2,
+				y + y_offset - height_max + width_border*2,
+			0)
 
 		for i,v in ipairs(humor_level_per_type) do
-			rectfill(x + x_offset + i,
+			rectfill(x + x_offset +width_bar*(i-1),
 					y + y_offset,
-					x + x_offset + 1 + i,
-					y + y_offset- v*8, 
+					x + x_offset + width_bar*i,
+					y + y_offset- height_max*v, 
+					i+8)
+		end
+		--- Draw overall humor level
+		  rectfill(x + x_offset + width_border,
+					y + y_offset +10,
+					x + x_offset + flr(width_max*humor_level),
+					y + y_offset +10 - width_border*2, 
+					9)
+
+		-- offset left, humor sensitivity per type
+		-- draw black bg 
+		rectfill(x - x_offset - width_border,
+				 y + y_offset + width_border,
+				x - x_offset + width_max + width_border*2,
+				y + y_offset - height_max + width_border*2,
+			0)
+
+		for i,v in ipairs(humor_sensitivity) do
+			rectfill(x - x_offset +width_bar*(i-1), --lua sucks
+					y + y_offset,
+					x - x_offset + width_bar*i,
+					y + y_offset - height_max*v, 
 					i+8)
 		end
 
-		for i,v in ipairs(humor_sensitivity) do
-			rectfill(x - x_offset + i,
-					y + y_offset,
-					x - x_offset + 1 + i,
-					y + y_offset - v*8, 
-					i+8)
-		end
+		
 
 		-- print(humor_level_per_type,0,0)
 		--print(humor_level,x,y,7)
