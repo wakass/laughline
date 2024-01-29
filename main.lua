@@ -5,7 +5,7 @@ GGJ game main
 -- config
 time_limit=999
 n_humor_types=4
-n_cities=4
+n_cities=1
 
 -- globals
 score=0

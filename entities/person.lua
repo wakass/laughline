@@ -63,6 +63,7 @@ person=entity:extend({
 					x=x,
 					y=y,
 					type=humor_type,
+					orig_id=id
 				})
 				energy-=energy_humor_costs
 			end

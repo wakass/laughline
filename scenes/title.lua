@@ -21,6 +21,7 @@ title_scene=scene:extend({
 				type=rnd(4),
 				max_size=rnd(150),
 				muted=true,
+				orig_id=id
 			})
 		end
 

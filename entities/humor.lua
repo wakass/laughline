@@ -10,6 +10,13 @@ humor=entity:extend({
 	text_py = 0,
 	text_id = 0,
 	text_fade = 30,
+
+	init=function(_ENV)
+		
+		entity.init(_ENV)
+		-- orig_id=orig_id
+		-- printh("Humor create? orig_id:" .. orig_id .. ", id:"..id)
+	end,
 	
 	update=function(_ENV)
 		if not muted then

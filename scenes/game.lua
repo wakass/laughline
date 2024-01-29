@@ -1,6 +1,9 @@
 local cities_list= {  
-	{x=30,y=30,sens={0,0,1,1}},
-	{x=90,y=90,sens={1,1,0,0}}   
+	{x=30,y=30,sens={0.0, 0.0,  0.8, 0.8}},
+	{x=30,y=60,sens={0.0, 0.0,  0.8, 0.8}},
+	{x=60,y=60,sens={1.0, 1.0,  1.0, 1.0}},
+	{x=90,y=30,sens={0.8, 0.8,  0.0, 0.0}},
+	{x=90,y=60,sens={0.8, 0.8,  0.0, 0.0}}   
 }
 
 game_scene=scene:extend({
@@ -40,7 +43,7 @@ game_scene=scene:extend({
 				x=c.x,
 				y=c.y,
 				humor_type= rnd(n_humor_types),
-				humor_decay=rnd(10)/10,
+				humor_decay=1/30/1,
 				humor_sensitivity=c.sens,
 			})
 		end

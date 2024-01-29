@@ -1,5 +1,6 @@
 --Frame sensitivity for humors
 n_forget_frames = 300
+n_humor_rate_max= 0.5 --rate per second
 
 -- city
 city=entity:extend({
@@ -10,23 +11,29 @@ city=entity:extend({
 	humor_level=0,
 	humor_treshold=1,
 	humor_sensitivity={},
-	humor_level_per_type={0,0,0,0},
-	humor_decay=0,
 	seen_humors = {}, --humors seen
 	
 	init=function(_ENV)
 		entity.init(_ENV)
 		humor_level_per_type={0,0,0,0}
+		seen_humors={}
+		humor_level=0
+		last_emitted_time=0
+		max_timer=0
 	end,
 
 	update=function(_ENV)
+		prune_seen_humors(_ENV) -- Remove any seen humours that have xpired
+
+		max_timer = max(0,max_timer-1)
+
 		-- decay humor level over time
-		humor_level-=humor_decay
-		
-		-- increase humor level of touched by humor
-		-- if true then
-		-- 	humor_level+=humor_sensitivity
-		-- end
+		for i,l in ipairs(humor_level_per_type) do
+			humor_level_per_type[i] -= humor_decay
+			if humor_level_per_type[i] <0 then
+				humor_level_per_type[i]=0
+			end
+		end
 		
 		-- Find total humor level and possible trigger
 		-- Make a squares weight for humor level
@@ -40,44 +47,37 @@ city=entity:extend({
 		likelihoods = {}
 		for i,n in ipairs(humor_sensitivity) do
 			l = n*rnd()
-			-- printh(l)
 			add(likelihoods, l)
 		end
 
-		local max_index = 0
-		local max_value = 0
-		for idx,val in ipairs(likelihoods) do
-			if (val > max_value) then
-				max_value = val
-				max_index = idx
-			end
-		end
+		k,v = max_table(likelihoods, function(a,b) return a < b end)
 
-		emit_humor_type = idx
-		-- printh("city id :" .. id .. "h: ".. k .. "level:" .. humor_level_per_type[3])
-		
+		emit_humor_type = k
 		if humor_level >= humor_treshold then
-			humor({
-				x=x,
-				y=y,
-				type=emit_humor_type,
-				max_size=rnd(20)+30,
-			})
-			humor_level = 0
+			-- printh("Got triggered, emitting from id: " .. id)
+			-- printh(humor_level)
+			if (max_timer == 0) then
+				max_timer = n_humor_rate_max*30
+				humor({
+					x=x,
+					y=y,
+					type=emit_humor_type,
+					max_size=rnd(20)+30,
+					orig_id=id
+				})
+			end
 		end	
 
-		prune_seen_humors(_ENV) -- Remove any seen humours that have xpired
 	end,
 	
 	process_incoming_humor=function(_ENV, h, distance) 
 		-- the humor that hit is weighted by sensitivity and distance/2
-		printh("Process humor type: ".. h.type .. "city id: " .. id)
 		assert(h.type >0)
 		if (flr(h.type) > n_humor_types) then 
 			printh("BUG!: ".. h.type)
 			return --bug fix
 		end
-		humor_level_per_type[h.type] += humor_sensitivity[h.type]/distance^2
+		humor_level_per_type[h.type] += humor_sensitivity[h.type]--/distance^1.5
 		
 	end,
 
@@ -86,14 +86,16 @@ city=entity:extend({
 			-- Calculate distance between city and initiated humor,
 			-- distance should 
 			x0 = {x=h.x,y=h.y}
-			x1 = {x=x, y=y}
+			x1 = {x=x, y=y} 
 
 			d = sqrt((x1.x-x0.x)^2 + (x1.y-x0.y)^2)
 			if (d < h.size and h.orig_id != id) then
 				if (process_seen(_ENV, h) == -1) then
 					-- Humor not seen yet, processing..
+					-- printh("Triggering h -- In city ".. id.. " Humor orig_id:" .. h.orig_id .. " humor id: " .. h.id)
 					process_incoming_humor(_ENV, h, d)
 				else
+					-- printh("Ignoring h -- In city ".. id.. " Humor orig_id:" .. h.orig_id .. " humor id: " .. h.id)
 					-- Ignore already seen humor
 				end
 			end
@@ -107,14 +109,14 @@ city=entity:extend({
 
 		for i=1,n do
 			h_seen = seen_humors[i]
-			-- if humors is seen, reduce framecount
+			-- if humors is seen
 			if h_check.id == h_seen.id then
-				h_seen.frame -= 1
 				seen_index = i
 				break
 			end
 		end
 		if seen_index == -1 then
+			-- printh("New humor added to seen id: " .. h_check.id)
 			add(seen_humors,{id=h_check.id,frame=n_forget_frames})
 		end
 
@@ -122,9 +124,11 @@ city=entity:extend({
 	end,
 
 	prune_seen_humors=function(_ENV)
-		-- Check for expired framecounts
+		-- Decrease seen humor and check for expired framecounts
 		for s in all(seen_humors) do
+			s.frame -= 1
 			if s.frame == 0 then
+				printh("City id: "..id.. " Seen humor id: " .. s.id .. "removed, reason: Expired")
 				del(seen_humors,s)
 			end
 		end

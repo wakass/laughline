@@ -1,5 +1,5 @@
 -- scenes
-global=_ENV
+-- global=_ENV
 
 scene=class:extend({
 	current=nil,

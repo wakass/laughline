@@ -24,7 +24,7 @@ entity=class:extend({
 	h=8,
 
 	init=function(_ENV)
-		lastid = lastid + 1
+		lastid += 1
 		id = lastid
 
 		add(entity.pool,_ENV)
@@ -54,9 +54,12 @@ entity=class:extend({
 	end,
 
 	destroy=function(_ENV)
-		del(entity.pool,_ENV)
+		-- delete first entity matching _ENV
+		del(entity.pool,_ENV) 
 		if pool != entity.pool then
 			del(pool,_ENV)
 		end
+		-- printh("deleted:" .. id)
+		-- printh(#entity.pool)
 	end
 })
